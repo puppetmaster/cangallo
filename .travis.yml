@@ -6,3 +6,5 @@ addons:
   apt:
     packages:
       - qemu-utils
+
+dist: trusty
