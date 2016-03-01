@@ -27,34 +27,6 @@ class Canga < Thor
   def add(file)
     repo = Repo.new("repo")
     repo.add_image(file)
-
-    # puts "Calculating image sha1 with libguestfs (it will take some time)"
-    # qcow2 = Qcow2.new(file)
-    # sha1 = qcow2.sha1
-    # sha1.strip! if sha1
-
-    # puts "Image SHA1: #{sha1}"
-
-    # puts "Copying file to repository"
-    # image_path = repo.image_path(sha1)
-    # FileUtils.cp(file, image_path)
-
-    # qcow2 = Qcow2.new(file)
-    # info = qcow2.info
-
-    # data = info.select do |k,v|
-    #   %w{virtual-size format actual-size format-specific}.include?(k)
-    # end
-
-    # data["file-sha1"] = Digest::SHA1.file(file).hexdigest
-
-    # if options[:parent]
-    #   qcow2.rebase("#{options[:parent]}")
-    #   data[:parent] = options[:parent]
-    # end
-
-    # repo.add(sha1, data)
-    # repo.write_index
   end
 
   desc "list", "list images"
@@ -123,41 +95,8 @@ class Canga < Thor
 
     repo.add_image(temp_image, data)
 
-    # # Copied from add. Make a function
-    # puts "Calculating image sha1 with libguestfs (it will take some time)"
-    # qcow2 = Qcow2.new(temp_image)
-    # sha1 = qcow2.sha1
-    # sha1.strip! if sha1
-
-    # puts "Image SHA1: #{sha1}"
-
-    # puts "Copying file to repository"
-    # image_path = repo.image_path(sha1)
-    # qcow2.copy(image_path, :parent => parent_path)
-
-    # puts "Deleting temporary image"
-    # FileUtils.rm(temp_image)
-
-    # qcow2 = Qcow2.new(image_path)
-    # info = qcow2.info
-
-    # data = info.select do |k,v|
-    #   %w{virtual-size format actual-size format-specific}.include?(k)
-    # end
-
-    # data["file-sha1"] = Digest::SHA1.file(file).hexdigest
-    # data["description"] = cangafile.data["description"]
-    # data["os"] = cangafile.data["os"]
-    # data["files"] = cangafile.data["files"]
-    # data["run"] = cangafile.data["run"]
-
-    # if cangafile.parent
-    #   qcow2.rebase("#{cangafile.parent}.qcow2")
-    #   data[:parent] = cangafile.parent
-    # end
-
-    # repo.add(sha1, data)
-    # repo.write_index
+    puts "Deleting temporary image"
+    FileUtils.rm(temp_image)
   end
 end
 
