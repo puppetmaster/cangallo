@@ -1,0 +1,166 @@
+#!/usr/bin/env ruby
+
+# vim:ts=2:sw=2
+
+$: << File.dirname(__FILE__) + "/../lib"
+
+require "rubygems"
+require "thor"
+require "fileutils"
+require "digest"
+require "cangallo"
+
+require "pp"
+
+include Cangallo
+
+class Canga < Thor
+  desc "create FILE [SIZE]", "create a new qcow2 image"
+  option :parent, :desc => "id of the parent image"
+  def create(file, size=nil)
+    puts [file, size]
+    Qcow2.create(file, options[:parent], size)
+  end
+
+  desc "add FILE", "add a new file to the repository"
+  option :parent, :desc => "id of the parent image"
+  def add(file)
+    repo = Repo.new("repo")
+    repo.add_image(file)
+
+    # puts "Calculating image sha1 with libguestfs (it will take some time)"
+    # qcow2 = Qcow2.new(file)
+    # sha1 = qcow2.sha1
+    # sha1.strip! if sha1
+
+    # puts "Image SHA1: #{sha1}"
+
+    # puts "Copying file to repository"
+    # image_path = repo.image_path(sha1)
+    # FileUtils.cp(file, image_path)
+
+    # qcow2 = Qcow2.new(file)
+    # info = qcow2.info
+
+    # data = info.select do |k,v|
+    #   %w{virtual-size format actual-size format-specific}.include?(k)
+    # end
+
+    # data["file-sha1"] = Digest::SHA1.file(file).hexdigest
+
+    # if options[:parent]
+    #   qcow2.rebase("#{options[:parent]}")
+    #   data[:parent] = options[:parent]
+    # end
+
+    # repo.add(sha1, data)
+    # repo.write_index
+  end
+
+  desc "list", "list images"
+  def list()
+    repo = Repo.new("repo")
+
+    format = "%-40s %-10s %-10s %-17s"
+
+    puts format % %w{HASH SIZE DISK_SIZE DESCRIPTION}
+
+    repo.images.each do |sha1, info|
+      puts format % [sha1, info["virtual-size"], info["actual-size"], info["description"]]
+    end
+
+  end
+
+  desc "overlay IMAGE FILE", "create a new image based on another one"
+  def overlay(sha1, file)
+    repo = Repo.new("repo")
+
+    image = repo.images[sha1]
+
+    if !image
+      STDERR.puts "Image not found"
+      exit(-1)
+    end
+
+    path = File.expand_path(repo.image_path(sha1))
+
+    Qcow2.create_from_base(path, file)
+  end
+
+  desc "build CANGAFILE", "create a new image using a Cangafile"
+  def build(file)
+    repo = Repo.new("repo")
+    cangafile = Cangafile.new(file)
+
+    puts cangafile.libguestfs_commands
+
+    image = repo.images[cangafile.parent]
+
+    if !image
+      STDERR.puts "Image not found"
+      exit(-1)
+    end
+
+    parent_path = File.expand_path(repo.image_path(cangafile.parent))
+
+    # temp image path
+    temp_image = File.join("repo", "temp-1.qcow2")
+
+    Qcow2.create_from_base(parent_path, temp_image)
+
+    rc = LibGuestfs.virt_customize(temp_image, cangafile.libguestfs_commands)
+    exit(-1) if !rc
+
+    rc = LibGuestfs.virt_sparsify(temp_image)
+    exit(-1) if !rc
+
+    data = {}
+    data["parent"] = cangafile.parent
+    data["description"] = cangafile.data["description"]
+    data["os"] = cangafile.data["os"]
+    data["files"] = cangafile.data["files"]
+    data["run"] = cangafile.data["run"]
+
+    repo.add_image(temp_image, data)
+
+    # # Copied from add. Make a function
+    # puts "Calculating image sha1 with libguestfs (it will take some time)"
+    # qcow2 = Qcow2.new(temp_image)
+    # sha1 = qcow2.sha1
+    # sha1.strip! if sha1
+
+    # puts "Image SHA1: #{sha1}"
+
+    # puts "Copying file to repository"
+    # image_path = repo.image_path(sha1)
+    # qcow2.copy(image_path, :parent => parent_path)
+
+    # puts "Deleting temporary image"
+    # FileUtils.rm(temp_image)
+
+    # qcow2 = Qcow2.new(image_path)
+    # info = qcow2.info
+
+    # data = info.select do |k,v|
+    #   %w{virtual-size format actual-size format-specific}.include?(k)
+    # end
+
+    # data["file-sha1"] = Digest::SHA1.file(file).hexdigest
+    # data["description"] = cangafile.data["description"]
+    # data["os"] = cangafile.data["os"]
+    # data["files"] = cangafile.data["files"]
+    # data["run"] = cangafile.data["run"]
+
+    # if cangafile.parent
+    #   qcow2.rebase("#{cangafile.parent}.qcow2")
+    #   data[:parent] = cangafile.parent
+    # end
+
+    # repo.add(sha1, data)
+    # repo.write_index
+  end
+end
+
+Canga.start(ARGV)
+
+
