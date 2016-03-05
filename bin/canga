@@ -14,6 +14,8 @@ require "pp"
 
 include Cangallo
 
+$config = Config.new
+
 class Canga < Thor
   desc "create FILE [SIZE]", "create a new qcow2 image"
   option :parent, :desc => "id of the parent image"
