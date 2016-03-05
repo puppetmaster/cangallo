@@ -54,7 +54,19 @@ class Canga < Thor
 
       puts format % [name, info["virtual-size"], info["actual-size"], info["description"]]
     end
+  end
 
+  desc "show IMAGE", "show information about an image"
+  def show(name)
+    repo = Repo.new("repo")
+    image = repo.get(name)
+
+    if image
+      pp image
+    else
+      SDTERR.puts "No image found with name '#{name}'"
+      exit(-1)
+    end
   end
 
   desc "overlay IMAGE FILE", "create a new image based on another one"
