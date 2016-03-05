@@ -55,6 +55,7 @@ module Cangallo
 
     def add(name, data)
       data["creation-time"] = Time.now
+      data["sha1"] = name
       @images[name] = data
     end
 
