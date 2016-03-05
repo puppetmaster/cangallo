@@ -114,6 +114,35 @@ module Cangallo
         write_index
     end
 
+    def find(name)
+      length = name.length
+      found = @images.select do |sha1, data|
+        sha1[0, length] == name
+      end
+
+      if found && found.length > 0
+        return found.first.first
+      end
+
+      found = @tags.select do |tag, sha1|
+        tag == name
+      end
+
+      if found && found.length > 0
+        return found.first[1]
+      end
+
+      nil
+    end
+
+    def get(name)
+      image = find(name)
+
+      return nil if !image
+
+      @images[image]
+    end
+
   end
 
 end
