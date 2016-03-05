@@ -1,5 +1,5 @@
 
-*WARNING*: still in early stages, expect crashes, data loss and incompatible changes.
+**WARNING**: still in early stages, expect crashes, data loss and incompatible changes.
 
 Cangallo is a tool that uses `qemu-img` and `libguestfs` to manage, create and organize qcow2 images. It's repository holds images and deltas of derived images in a similar way as Docker but in a block level instead of file level.
 
@@ -7,7 +7,7 @@ Cangallo is a tool that uses `qemu-img` and `libguestfs` to manage, create and o
 
 * Ruby 2.2.0
 * qemu-img >= 2.4.0
-* libguestfs, tested with 1.28 but should work with older images
+* libguestfs, tested with 1.28 but should work with older versions
 
 ## Ruby dependencies installation
 
