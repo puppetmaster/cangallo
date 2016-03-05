@@ -104,6 +104,13 @@ module Cangallo
 
       self.add(sha1, data)
       self.write_index
+
+      sha1
+    end
+
+    def add_tag(tag, image)
+        @tags[tag] = image
+        write_index
     end
 
   end

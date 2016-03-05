@@ -24,9 +24,18 @@ class Canga < Thor
 
   desc "add FILE", "add a new file to the repository"
   option :parent, :desc => "id of the parent image"
+  option :tag, :desc => "tag name of the new image"
   def add(file)
     repo = Repo.new("repo")
-    repo.add_image(file)
+    sha1 = repo.add_image(file)
+
+    repo.add_tag(options[:tag], sha1) if options[:tag]
+  end
+
+  desc "tag TAGNAME IMAGE", "add a tag name to an existing image"
+  def tag(tag, sha1)
+    repo = Repo.new("repo")
+    repo.add_tag(tag, sha1)
   end
 
   desc "list", "list images"
@@ -36,9 +45,14 @@ class Canga < Thor
     format = "%-40s %-10s %-10s %-17s"
 
     puts format % %w{HASH SIZE DISK_SIZE DESCRIPTION}
+    reverse_tags = repo.tags.invert
 
     repo.images.each do |sha1, info|
-      puts format % [sha1, info["virtual-size"], info["actual-size"], info["description"]]
+      tag = reverse_tags[sha1]
+      name = sha1[0..15]
+      name << " (#{tag})" if tag
+
+      puts format % [name, info["virtual-size"], info["actual-size"], info["description"]]
     end
 
   end
