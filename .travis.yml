@@ -7,4 +7,5 @@ addons:
     packages:
       - qemu-utils
 
+sudo: required
 dist: trusty
