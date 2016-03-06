@@ -75,7 +75,7 @@ class Canga < Thor
   def overlay(sha1, file)
     repo = Repo.new("repo")
 
-    image = repo.images[sha1]
+    image = repo.find(sha1)
 
     if !image
       STDERR.puts "Image not found"
