@@ -110,7 +110,8 @@ module Cangallo
     end
 
     def add_tag(tag, image)
-        @tags[tag] = image
+        img = find(image)
+        @tags[tag] = img
         write_index
     end
 

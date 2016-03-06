@@ -94,14 +94,14 @@ class Canga < Thor
 
     puts cangafile.libguestfs_commands
 
-    image = repo.images[cangafile.parent]
+    sha1 = repo.find(cangafile.parent)
 
     if !image
       STDERR.puts "Image not found"
       exit(-1)
     end
 
-    parent_path = File.expand_path(repo.image_path(cangafile.parent))
+    parent_path = File.expand_path(repo.image_path(sha1))
 
     # temp image path
     temp_image = File.join("repo", "temp-1.qcow2")
@@ -115,7 +115,7 @@ class Canga < Thor
     exit(-1) if !rc
 
     data = {}
-    data["parent"] = cangafile.parent
+    data["parent"] = sha1
     data["description"] = cangafile.data["description"]
     data["os"] = cangafile.data["os"]
     data["files"] = cangafile.data["files"]
