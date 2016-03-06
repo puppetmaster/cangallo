@@ -17,6 +17,8 @@ include Cangallo
 $config = Config.new
 
 class Canga < Thor
+  class_option :repo, :desc => 'repository to use'
+
   desc "create FILE [SIZE]", "create a new qcow2 image"
   option :parent, :desc => "id of the parent image"
   def create(file, size=nil)
@@ -28,7 +30,7 @@ class Canga < Thor
   option :parent, :desc => "id of the parent image"
   option :tag, :desc => "tag name of the new image"
   def add(file)
-    repo = $config.repo
+    repo = $config.repo(options[:repo])
     sha1 = repo.add_image(file)
 
     repo.add_tag(options[:tag], sha1) if options[:tag]
@@ -36,13 +38,13 @@ class Canga < Thor
 
   desc "tag TAGNAME IMAGE", "add a tag name to an existing image"
   def tag(tag, sha1)
-    repo = $config.repo
+    repo = $config.repo(options[:repo])
     repo.add_tag(tag, sha1)
   end
 
   desc "list", "list images"
   def list()
-    repo = $config.repo
+    repo = $config.repo(options[:repo])
 
     format = "%-40s %-10s %-10s %-17s"
 
@@ -60,7 +62,7 @@ class Canga < Thor
 
   desc "show IMAGE", "show information about an image"
   def show(name)
-    repo = $config.repo
+    repo = $config.repo(options[:repo])
     image = repo.get(name)
 
     if image
@@ -73,7 +75,7 @@ class Canga < Thor
 
   desc "overlay IMAGE FILE", "create a new image based on another one"
   def overlay(sha1, file)
-    repo = $config.repo
+    repo = $config.repo(options[:repo])
 
     image = repo.find(sha1)
 
@@ -89,7 +91,7 @@ class Canga < Thor
 
   desc "build CANGAFILE", "create a new image using a Cangafile"
   def build(file)
-    repo = $config.repo
+    repo = $config.repo(options[:repo])
     cangafile = Cangafile.new(file)
 
     puts cangafile.libguestfs_commands
