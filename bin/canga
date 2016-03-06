@@ -28,7 +28,7 @@ class Canga < Thor
   option :parent, :desc => "id of the parent image"
   option :tag, :desc => "tag name of the new image"
   def add(file)
-    repo = Repo.new("repo")
+    repo = $config.repo
     sha1 = repo.add_image(file)
 
     repo.add_tag(options[:tag], sha1) if options[:tag]
@@ -36,13 +36,13 @@ class Canga < Thor
 
   desc "tag TAGNAME IMAGE", "add a tag name to an existing image"
   def tag(tag, sha1)
-    repo = Repo.new("repo")
+    repo = $config.repo
     repo.add_tag(tag, sha1)
   end
 
   desc "list", "list images"
   def list()
-    repo = Repo.new("repo")
+    repo = $config.repo
 
     format = "%-40s %-10s %-10s %-17s"
 
@@ -60,7 +60,7 @@ class Canga < Thor
 
   desc "show IMAGE", "show information about an image"
   def show(name)
-    repo = Repo.new("repo")
+    repo = $config.repo
     image = repo.get(name)
 
     if image
@@ -73,7 +73,7 @@ class Canga < Thor
 
   desc "overlay IMAGE FILE", "create a new image based on another one"
   def overlay(sha1, file)
-    repo = Repo.new("repo")
+    repo = $config.repo
 
     image = repo.find(sha1)
 
@@ -89,7 +89,7 @@ class Canga < Thor
 
   desc "build CANGAFILE", "create a new image using a Cangafile"
   def build(file)
-    repo = Repo.new("repo")
+    repo = $config.repo
     cangafile = Cangafile.new(file)
 
     puts cangafile.libguestfs_commands
