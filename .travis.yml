@@ -6,6 +6,7 @@ addons:
   apt:
     packages:
       - qemu-utils
+      - libguestfs-tools
 
 sudo: required
 dist: trusty
