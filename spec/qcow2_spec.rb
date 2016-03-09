@@ -21,7 +21,7 @@ describe Qcow2 do
   context "creating the base image" do
     before :all do
       @path = File.join(@tmpdir, 'base.qcow2')
-      Qcow2.create(@path, nil, 10737418240) # 10Gb
+      Qcow2.create(@path, nil, 100*1024*1024) # 100 Mb
     end
 
     it "should be able to create it" do
@@ -34,17 +34,25 @@ describe Qcow2 do
       info = qcow2.info
       expect(info).not_to eq(nil)
 
-      expect(info['virtual-size']).to eq(10737418240)
+      expect(info['virtual-size']).to eq(100*1024*1024)
       expect(info['cluster-size']).to eq(65536)
       expect(info['format']).to eq('qcow2')
       expect(info['actual-size']).to eq(200704)
+    end
+
+    it 'should be able to compute sha1' do
+      qcow2 = Qcow2.new(@path)
+
+      sha1 = qcow2.sha1
+      expect(sha1).to eq("2c2ceccb5ec5574f791d45b63c940cff20550f9a")
     end
   end
 
   context "with the child image" do
     before :all do
       @path = File.join(@tmpdir, 'child.qcow2')
-      Qcow2.create(@path, File.join(@tmpdir, 'base.qcow2'), 21474836480) # 20Gb
+      # 200 Mb
+      Qcow2.create(@path, File.join(@tmpdir, 'base.qcow2'), 200*1024*1024)
     end
 
     it "should be able to create it" do
@@ -57,11 +65,18 @@ describe Qcow2 do
       info = qcow2.info
       expect(info).not_to eq(nil)
 
-      expect(info['virtual-size']).to eq(21474836480)
+      expect(info['virtual-size']).to eq(200*1024*1024)
       expect(info['cluster-size']).to eq(65536)
       expect(info['format']).to eq('qcow2')
       expect(info['actual-size']).to eq(200704)
       expect(File.basename(info['backing-filename'])).to eq('base.qcow2')
+    end
+
+    it 'should be able to compute sha1' do
+      qcow2 = Qcow2.new(@path)
+
+      sha1 = qcow2.sha1
+      expect(sha1).to eq("fd7c5327c68fcf94b62dc9f58fc1cdb3c8c01258")
     end
   end
 end
