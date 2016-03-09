@@ -10,8 +10,9 @@ module Cangallo
 
     VERSION = 0
 
-    def initialize(path)
-      @path = path
+    def initialize(conf)
+      @conf = conf
+      @path = @conf["path"]
 
       read_index
     end
@@ -157,7 +158,6 @@ module Cangallo
 
       ancestors
     end
-
   end
 
 end
