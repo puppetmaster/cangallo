@@ -71,7 +71,7 @@ module Cangallo
     def sha1
       command = "guestfish --progress-bars --ro -a #{@path} " <<
                 "run : checksum-device sha1 /dev/sda"
-      %x{#{command}}
+      %x{#{command}}.strip
     end
 
     def rebase(new_base)
