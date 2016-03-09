@@ -144,6 +144,20 @@ module Cangallo
       @images[image]
     end
 
+    def ancestors(name)
+      ancestors = []
+
+      image = get(name)
+      ancestors << image["sha1"]
+
+      while image["parent"]
+        image = image["parent"]
+        ancestors << image["sha1"]
+      end
+
+      ancestors
+    end
+
   end
 
 end
