@@ -128,6 +128,13 @@ class Canga < Thor
     puts "Deleting temporary image"
     FileUtils.rm(temp_image)
   end
+
+  desc "fetch", "download the index of the repository"
+  def fetch
+    repo = $config.repo(options[:repo])
+
+    repo.fetch
+  end
 end
 
 Canga.start(ARGV)

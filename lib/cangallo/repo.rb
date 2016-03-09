@@ -1,18 +1,19 @@
 
 require "yaml"
+require "open-uri"
 
 # vim:ts=2:sw=2
 
 module Cangallo
 
   class Repo
-    attr_reader :images, :tags
+    attr_reader :images, :tags, :path
 
     VERSION = 0
 
     def initialize(conf)
       @conf = conf
-      @path = @conf["path"]
+      @path = File.expand_path(@conf["path"])
 
       read_index
     end
@@ -25,13 +26,17 @@ module Cangallo
       }
     end
 
-    def read_index
-      index_path = metadata_path("index")
+    def read_index(index = nil)
+      if !index
+        index_path = metadata_path("index")
 
-      if File.exist?(index_path)
-        data = YAML.load(File.read(index_path))
+        if File.exist?(index_path)
+          data = YAML.load(File.read(index_path))
+        else
+          data = index_data()
+        end
       else
-        data = index_data()
+        data = YAML.load(index)
       end
 
       @images = data["images"]
@@ -157,6 +162,23 @@ module Cangallo
       end
 
       ancestors
+    end
+
+    def url
+      @conf["url"]
+    end
+
+    def fetch
+      return nil if @conf["type"] != "remote"
+
+      uri = URI.join(url, "index.yaml")
+
+      open(uri, "r") do |f|
+        data = f.read
+        read_index(data)
+      end
+
+      write_index
     end
   end
 

@@ -29,7 +29,9 @@ EOT
       raise(%Q<No repo with name '#{repo_name}>) if !repo_conf
       raise(%Q<Repo path no defined for '#{repo_name}>) if !repo_conf['path']
 
-      create_repo_dir(repo_conf['path'])
+      path = File.expand_path(repo_conf["path"])
+      repo_conf["path"] = path
+      create_repo_dir(path)
       Cangallo::Repo.new(repo_conf)
     end
 
