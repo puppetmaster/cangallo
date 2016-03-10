@@ -98,7 +98,7 @@ class Canga < Thor
 
     sha1 = repo.find(cangafile.parent)
 
-    if !image
+    if !sha1
       STDERR.puts "Image not found"
       exit(-1)
     end
