@@ -7,13 +7,14 @@ require "open-uri"
 module Cangallo
 
   class Repo
-    attr_reader :images, :tags, :path
+    attr_reader :images, :tags, :path, :name
 
     VERSION = 0
 
     def initialize(conf)
       @conf = conf
       @path = File.expand_path(@conf["path"])
+      @name = @conf["name"]
 
       read_index
     end

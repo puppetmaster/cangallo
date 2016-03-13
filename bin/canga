@@ -45,18 +45,44 @@ class Canga < Thor
   desc "list", "list images"
   def list()
     repo = $config.repo(options[:repo])
+    repo_name = repo.name
 
-    format = "%-40s %-10s %-10s %-17s"
+    format = "%-30.30s %11.11s %-30.30s"
 
-    puts format % %w{HASH SIZE DISK_SIZE DESCRIPTION}
+    puts format % %w{NAME SIZE DESCRIPTION}
     reverse_tags = repo.tags.invert
 
     repo.images.each do |sha256, info|
       tag = reverse_tags[sha256]
-      name = sha256[0..15]
-      name << " (#{tag})" if tag
 
-      puts format % [name, info["virtual-size"], info["actual-size"], info["description"]]
+      if tag
+        name = "#{repo_name}:#{tag}"
+      else
+        name = "#{repo_name}:#{sha256[0..15]}"
+      end
+
+      parent_sha256 = repo.get(sha256)["parent"]
+      parent = repo.get(parent_sha256) if parent_sha256
+
+      if parent_sha256
+        tag = reverse_tags[parent_sha256]
+
+        if tag
+          parent_name = "#{repo_name}:#{tag}"
+        else
+          parent_name = "#{repo_name}:#{parent_sha256[0..15]}"
+        end
+
+        name = "*#{name}"
+      else
+        parent_name = ""
+        name = " #{name}"
+      end
+
+      size = info["actual-size"].to_f / (1024 * 1024) # Mb
+      size = size.round(1)
+
+      puts format % [name, "#{size} Mb", info["description"]]
     end
   end
 
@@ -120,8 +146,10 @@ class Canga < Thor
     data["parent"] = sha256
     data["description"] = cangafile.data["description"]
     data["os"] = cangafile.data["os"]
-    data["files"] = cangafile.data["files"]
-    data["run"] = cangafile.data["run"]
+    cangafile.data.delete("description")
+    cangafile.data.delete("os")
+
+    data["cangafile"] = cangafile.data
 
     repo.add_image(temp_image, data)
 

@@ -31,6 +31,7 @@ EOT
 
       path = File.expand_path(repo_conf["path"])
       repo_conf["path"] = path
+      repo_conf["name"] = repo_name
       create_repo_dir(path)
       Cangallo::Repo.new(repo_conf)
     end
