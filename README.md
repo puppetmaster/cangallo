@@ -8,6 +8,7 @@ Cangallo is a tool that uses `qemu-img` and `libguestfs` to manage, create and o
 * Ruby 2.2.0
 * qemu-img >= 2.4.0
 * libguestfs, tested with 1.28 but should work with older versions
+* keybase, for index sign and verify functionality
 
 ## Ruby dependencies installation
 
@@ -128,6 +129,23 @@ HASH                                     SIZE       DISK_SIZE  DESCRIPTION
 850dd1fccd8f5b1e (ubuntu:16.04)          2361393152 302292992
 8a02f25118384ca9 (ubuntu:one:16.04)      2361393152 14819328   OpenNebula Compatible Ubuntu 16.04
 ```
+
+# Sign index
+
+```
+$ bin/canga sign
+$ ls -l repo/index.yaml.sig
+-rw-r--r-- 1 jfontan jfontan 801 Mar 13 16:52 repo/index.yaml.sig
+```
+
+# Verify index signature
+
+```
+$ bin/canga verify
+Signature verified. Signed by jfontan 4 minutes ago (2016-03-13 16:52:28 +0100 CET).
+PGP Fingerprint: d21c933397d1dea76ab4035a5255eb6cbbceb6b3.
+```
+
 
 
 
