@@ -17,7 +17,7 @@ EOT
 
     def initialize
       create_config_dir
-      create_default_config
+      create_default_config  
       load_conf
     end
 

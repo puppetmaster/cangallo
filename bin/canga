@@ -31,15 +31,15 @@ class Canga < Thor
   option :tag, :desc => "tag name of the new image"
   def add(file)
     repo = $config.repo(options[:repo])
-    sha1 = repo.add_image(file)
+    sha256 = repo.add_image(file)
 
-    repo.add_tag(options[:tag], sha1) if options[:tag]
+    repo.add_tag(options[:tag], sha256) if options[:tag]
   end
 
   desc "tag TAGNAME IMAGE", "add a tag name to an existing image"
-  def tag(tag, sha1)
+  def tag(tag, sha256)
     repo = $config.repo(options[:repo])
-    repo.add_tag(tag, sha1)
+    repo.add_tag(tag, sha256)
   end
 
   desc "list", "list images"
@@ -51,9 +51,9 @@ class Canga < Thor
     puts format % %w{HASH SIZE DISK_SIZE DESCRIPTION}
     reverse_tags = repo.tags.invert
 
-    repo.images.each do |sha1, info|
-      tag = reverse_tags[sha1]
-      name = sha1[0..15]
+    repo.images.each do |sha256, info|
+      tag = reverse_tags[sha256]
+      name = sha256[0..15]
       name << " (#{tag})" if tag
 
       puts format % [name, info["virtual-size"], info["actual-size"], info["description"]]
@@ -74,17 +74,17 @@ class Canga < Thor
   end
 
   desc "overlay IMAGE FILE", "create a new image based on another one"
-  def overlay(sha1, file)
+  def overlay(sha256, file)
     repo = $config.repo(options[:repo])
 
-    image = repo.find(sha1)
+    image = repo.find(sha256)
 
     if !image
       STDERR.puts "Image not found"
       exit(-1)
     end
 
-    path = File.expand_path(repo.image_path(sha1))
+    path = File.expand_path(repo.image_path(sha256))
 
     Qcow2.create_from_base(path, file)
   end
@@ -96,14 +96,14 @@ class Canga < Thor
 
     puts cangafile.libguestfs_commands
 
-    sha1 = repo.find(cangafile.parent)
+    sha256 = repo.find(cangafile.parent)
 
-    if !sha1
+    if !sha256
       STDERR.puts "Image not found"
       exit(-1)
     end
 
-    parent_path = File.expand_path(repo.image_path(sha1))
+    parent_path = File.expand_path(repo.image_path(sha256))
 
     # temp image path
     temp_image = File.join("repo", "temp-1.qcow2")
@@ -117,7 +117,7 @@ class Canga < Thor
     exit(-1) if !rc
 
     data = {}
-    data["parent"] = sha1
+    data["parent"] = sha256
     data["description"] = cangafile.data["description"]
     data["os"] = cangafile.data["os"]
     data["files"] = cangafile.data["files"]

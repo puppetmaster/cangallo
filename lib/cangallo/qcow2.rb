@@ -68,10 +68,18 @@ module Cangallo
       status, stdout, stderr = systemu command
     end
 
-    def sha1
+    def sha(ver = 256)
       command = "guestfish --progress-bars --ro -a #{@path} " <<
-                "run : checksum-device sha1 /dev/sda"
+                "run : checksum-device sha#{ver} /dev/sda"
       %x{#{command}}.strip
+    end
+
+    def sha1
+      sha(1)
+    end
+
+    def sha256
+      sha(256)
     end
 
     def rebase(new_base)

@@ -61,36 +61,36 @@ module Cangallo
 
     def add(name, data)
       data["creation-time"] = Time.now
-      data["sha1"] = name
+      data["sha256"] = name
       @images[name] = data
     end
 
     def add_image(file, data = {})
-      parent_sha1 = nil
+      parent_sha256 = nil
       parent = nil
       parent_path = nil
 
       if data["parent"]
-        parent_sha1 = data["parent"]
-        parent = self.images[parent_sha1]
+        parent_sha256 = data["parent"]
+        parent = self.images[parent_sha256]
 
         if !parent
           STDERR.puts "Parent not found"
           exit(-1)
         end
 
-        parent_path = File.expand_path(self.image_path(parent_sha1))
+        parent_path = File.expand_path(self.image_path(parent_sha256))
       end
 
-      puts "Calculating image sha1 with libguestfs (it will take some time)"
+      puts "Calculating image sha256 with libguestfs (it will take some time)"
       qcow2 = Cangallo::Qcow2.new(file)
-      sha1 = qcow2.sha1
-      sha1.strip! if sha1
+      sha256 = qcow2.sha256
+      sha256.strip! if sha256
 
-      puts "Image SHA1: #{sha1}"
+      puts "Image SHA256: #{sha256}"
 
       puts "Copying file to repository"
-      image_path = self.image_path(sha1)
+      image_path = self.image_path(sha256)
       qcow2.copy(image_path, :parent => parent_path)
 
       qcow2 = Cangallo::Qcow2.new(image_path)
@@ -102,17 +102,17 @@ module Cangallo
 
       data.merge!(info_data)
 
-      data["file-sha1"] = Digest::SHA1.file(file).hexdigest
+      data["file-sha256"] = Digest::SHA256.file(file).hexdigest
 
       if parent
-        qcow2.rebase("#{parent_sha1}.qcow2")
-        data["parent"] = parent_sha1
+        qcow2.rebase("#{parent_sha256}.qcow2")
+        data["parent"] = parent_sha256
       end
 
-      self.add(sha1, data)
+      self.add(sha256, data)
       self.write_index
 
-      sha1
+      sha256
     end
 
     def add_tag(tag, image)
@@ -123,15 +123,15 @@ module Cangallo
 
     def find(name)
       length = name.length
-      found = @images.select do |sha1, data|
-        sha1[0, length] == name
+      found = @images.select do |sha256, data|
+        sha256[0, length] == name
       end
 
       if found && found.length > 0
         return found.first.first
       end
 
-      found = @tags.select do |tag, sha1|
+      found = @tags.select do |tag, sha256|
         tag == name
       end
 
@@ -154,11 +154,11 @@ module Cangallo
       ancestors = []
 
       image = get(name)
-      ancestors << image["sha1"]
+      ancestors << image["sha256"]
 
       while image["parent"]
         image = image["parent"]
-        ancestors << image["sha1"]
+        ancestors << image["sha256"]
       end
 
       ancestors
