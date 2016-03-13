@@ -135,6 +135,18 @@ class Canga < Thor
 
     repo.fetch
   end
+
+  desc "sign", "sign the index file with keybase"
+  def sign
+    repo = $config.repo(options[:repo])
+    repo.sign
+  end
+
+  desc "verify", "verify index signature with keybase"
+  def verify
+    repo = $config.repo(options[:repo])
+    repo.verify
+  end
 end
 
 Canga.start(ARGV)

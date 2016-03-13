@@ -26,10 +26,12 @@ module Cangallo
       }
     end
 
+    def index_path
+      metadata_path("index")
+    end
+
     def read_index(index = nil)
       if !index
-        index_path = metadata_path("index")
-
         if File.exist?(index_path)
           data = YAML.load(File.read(index_path))
         else
@@ -179,6 +181,14 @@ module Cangallo
       end
 
       write_index
+    end
+
+    def sign
+      Keybase.sign(index_path)
+    end
+
+    def verify
+      Keybase.verify(index_path)
     end
   end
 
