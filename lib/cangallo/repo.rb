@@ -51,8 +51,9 @@ class Cangallo
         data = YAML.load(index)
       end
 
-      @images = data["images"]
-      @tags   = data["tags"]
+      @images       = data["images"]
+      @tags         = data["tags"]
+      @reverse_tags = @tags.invert
     end
 
     def write_index
@@ -221,6 +222,18 @@ class Cangallo
       STDERR.puts(cmd)
 
       system(cmd)
+    end
+
+    def short_name(sha256)
+      tag = @reverse_tags[sha256]
+
+      if tag
+        name = "#{tag}"
+      else
+        name = "#{sha256[0..15]}"
+      end
+
+      name
     end
   end
 

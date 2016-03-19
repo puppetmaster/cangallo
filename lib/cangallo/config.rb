@@ -1,4 +1,6 @@
 
+# vim:ts=2:sw=2
+
 require 'fileutils'
 require 'yaml'
 
@@ -70,6 +72,10 @@ EOT
 
     def config_file
       File.join(config_dir, CONFIG_FILE)
+    end
+
+    def repos
+      @conf["repos"].keys
     end
   end
 end

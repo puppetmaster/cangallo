@@ -13,7 +13,7 @@ require "tempfile"
 
 require "pp"
 
-$config = Cangallo::Config.new
+$cangallo = Cangallo.new
 
 class Canga < Thor
   class_option :repo, :desc => 'repository to use'
@@ -29,7 +29,7 @@ class Canga < Thor
   option :parent, :desc => "id of the parent image"
   option :tag, :desc => "tag name of the new image"
   def add(file)
-    repo = $config.repo(options[:repo])
+    repo = $cangallo.repo(options[:repo])
     sha256 = repo.add_image(file)
 
     repo.add_tag(options[:tag], sha256) if options[:tag]
@@ -37,57 +37,35 @@ class Canga < Thor
 
   desc "tag TAGNAME IMAGE", "add a tag name to an existing image"
   def tag(tag, sha256)
-    repo = $config.repo(options[:repo])
+    repo = $cangallo.repo(options[:repo])
     repo.add_tag(tag, sha256)
   end
 
   desc "list", "list images"
   def list()
-    repo = $config.repo(options[:repo])
+    repo = $cangallo.repo(options[:repo])
     repo_name = repo.name
+
+    images = $cangallo.get_images
 
     format = "%-30.30s %11.11s %-30.30s"
 
     puts format % %w{NAME SIZE DESCRIPTION}
-    reverse_tags = repo.tags.invert
 
-    repo.images.each do |sha256, info|
-      tag = reverse_tags[sha256]
+    images.each do |image|
+      parent = image["parent"] ? "*" : " "
+      name = "#{parent}#{image["name"]}"
 
-      if tag
-        name = "#{repo_name}:#{tag}"
-      else
-        name = "#{repo_name}:#{sha256[0..15]}"
-      end
-
-      parent_sha256 = repo.get(sha256)["parent"]
-      parent = repo.get(parent_sha256) if parent_sha256
-
-      if parent_sha256
-        tag = reverse_tags[parent_sha256]
-
-        if tag
-          parent_name = "#{repo_name}:#{tag}"
-        else
-          parent_name = "#{repo_name}:#{parent_sha256[0..15]}"
-        end
-
-        name = "*#{name}"
-      else
-        parent_name = ""
-        name = " #{name}"
-      end
-
-      size = info["actual-size"].to_f / (1024 * 1024) # Mb
+      size = image["size"].to_f / (1024 * 1024) # Mb
       size = size.round(1)
 
-      puts format % [name, "#{size} Mb", info["description"]]
+      puts format % [name, "#{size} Mb", image["description"]]
     end
   end
 
   desc "show IMAGE", "show information about an image"
   def show(name)
-    repo = $config.repo(options[:repo])
+    repo = $cangallo.repo(options[:repo])
     image = repo.get(name)
 
     if image
@@ -100,7 +78,7 @@ class Canga < Thor
 
   desc "overlay IMAGE FILE", "create a new image based on another one"
   def overlay(sha256, file)
-    repo = $config.repo(options[:repo])
+    repo = $cangallo.repo(options[:repo])
 
     image = repo.find(sha256)
 
@@ -116,7 +94,7 @@ class Canga < Thor
 
   desc "build CANGAFILE", "create a new image using a Cangafile"
   def build(file)
-    repo = $config.repo(options[:repo])
+    repo = $cangallo.repo(options[:repo])
     cangafile = Cangafile.new(file)
 
     puts cangafile.libguestfs_commands
@@ -159,26 +137,26 @@ class Canga < Thor
 
   desc "fetch", "download the index of the repository"
   def fetch
-    repo = $config.repo(options[:repo])
+    repo = $cangallo.repo(options[:repo])
 
     repo.fetch
   end
 
   desc "sign", "sign the index file with keybase"
   def sign
-    repo = $config.repo(options[:repo])
+    repo = $cangallo.repo(options[:repo])
     repo.sign
   end
 
   desc "verify", "verify index signature with keybase"
   def verify
-    repo = $config.repo(options[:repo])
+    repo = $cangallo.repo(options[:repo])
     repo.verify
   end
 
   desc "pull NAME", "downloads an image from a remote repository"
   def pull(name)
-    repo = $config.repo(options[:repo])
+    repo = $cangallo.repo(options[:repo])
     repo.pull(name)
   end
 
