@@ -177,6 +177,13 @@ class Canga < Thor
     repo = $config.repo(options[:repo])
     repo.verify
   end
+
+  desc "pull NAME", "downloads an image from a remote repository"
+  def pull(name)
+    repo = $config.repo(options[:repo])
+    repo.pull(name)
+  end
+
 end
 
 Canga.start(ARGV)

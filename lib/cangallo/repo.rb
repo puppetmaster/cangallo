@@ -1,6 +1,7 @@
 
 require "yaml"
 require "open-uri"
+require "uri"
 
 # vim:ts=2:sw=2
 
@@ -15,6 +16,14 @@ module Cangallo
       @conf = conf
       @path = File.expand_path(@conf["path"])
       @name = @conf["name"]
+      @type = @conf["type"]
+      @url  = @conf["url"]
+
+      if !@type && @url
+        @type = "remote"
+      else
+        @type = "local"
+      end
 
       read_index
     end
@@ -60,6 +69,14 @@ module Cangallo
 
     def image_path(name)
       File.join(@path, "#{name}.qcow2")
+    end
+
+    def remote_url(name)
+      URI.join(@url, name)
+    end
+
+    def remote_image_url(name)
+      remote_url("#{name}.qcow2")
     end
 
     def add(name, data)
@@ -173,7 +190,7 @@ module Cangallo
     def fetch
       return nil if @conf["type"] != "remote"
 
-      uri = URI.join(url, "index.yaml")
+      uri = remote_url("index.yaml")
 
       open(uri, "r") do |f|
         data = f.read
@@ -189,6 +206,21 @@ module Cangallo
 
     def verify
       Keybase.verify(index_path)
+    end
+
+    def pull(name)
+      image = get(name)
+
+      raise "Image not found" if !image
+
+      sha256 = image["sha256"]
+      image_url = remote_image_url(sha256)
+      image_path = image_path(sha256)
+      cmd = "curl -o '#{image_path}' '#{image_url}'"
+
+      STDERR.puts(cmd)
+
+      system(cmd)
     end
   end
 
