@@ -78,8 +78,7 @@ module Cangallo
         parent = self.images[parent_sha256]
 
         if !parent
-          STDERR.puts "Parent not found"
-          exit(-1)
+          raise "Parent not found"
         end
 
         parent_path = File.expand_path(self.image_path(parent_sha256))
