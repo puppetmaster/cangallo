@@ -2,7 +2,7 @@
 require 'fileutils'
 require 'yaml'
 
-module Cangallo
+class Cangallo
   class Config
     CONFIG_DIR = '.cangallo'
     CONFIG_FILE = 'config.yaml'
@@ -17,7 +17,7 @@ EOT
 
     def initialize
       create_config_dir
-      create_default_config  
+      create_default_config
       load_conf
     end
 

@@ -1,7 +1,7 @@
 
 # vim:tabstop=2:sw=2:et:
 
-module Cangallo
+class Cangallo
 
   module Keybase
     def self.sign(file)

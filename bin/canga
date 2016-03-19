@@ -13,9 +13,7 @@ require "tempfile"
 
 require "pp"
 
-include Cangallo
-
-$config = Config.new
+$config = Cangallo::Config.new
 
 class Canga < Thor
   class_option :repo, :desc => 'repository to use'
@@ -24,7 +22,7 @@ class Canga < Thor
   option :parent, :desc => "id of the parent image"
   def create(file, size=nil)
     puts [file, size]
-    Qcow2.create(file, options[:parent], size)
+    Cangallo::Qcow2.create(file, options[:parent], size)
   end
 
   desc "add FILE", "add a new file to the repository"
@@ -113,7 +111,7 @@ class Canga < Thor
 
     path = File.expand_path(repo.image_path(sha256))
 
-    Qcow2.create_from_base(path, file)
+    Cangallo::Qcow2.create_from_base(path, file)
   end
 
   desc "build CANGAFILE", "create a new image using a Cangafile"
@@ -136,7 +134,7 @@ class Canga < Thor
     temp_image = Tempfile.new([File.basename(file), '.qcow2'], repo.path)
     temp_image.close
 
-    Qcow2.create_from_base(parent_path, temp_image.path)
+    Cangallo::Qcow2.create_from_base(parent_path, temp_image.path)
 
     rc = LibGuestfs.virt_customize(temp_image.path, cangafile.libguestfs_commands)
     exit(-1) if !rc

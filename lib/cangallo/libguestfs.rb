@@ -6,7 +6,7 @@ require 'systemu'
 require 'tempfile'
 require 'fileutils'
 
-module Cangallo
+class Cangallo
 
   class LibGuestfs
     def self.virt_customize(image, commands)

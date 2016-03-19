@@ -5,7 +5,7 @@ require "uri"
 
 # vim:ts=2:sw=2
 
-module Cangallo
+class Cangallo
 
   class Repo
     attr_reader :images, :tags, :path, :name

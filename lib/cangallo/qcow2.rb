@@ -6,7 +6,7 @@ require 'systemu'
 require 'tempfile'
 require 'fileutils'
 
-module Cangallo
+class Cangallo
 
   class Qcow2
     attr_reader :path

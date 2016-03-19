@@ -7,7 +7,7 @@ require 'tempfile'
 require 'fileutils'
 require 'yaml'
 
-module Cangallo
+class Cangallo
 
   class Cangafile
     attr_accessor :data
