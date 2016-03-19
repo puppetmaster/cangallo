@@ -133,7 +133,7 @@ class Canga < Thor
     parent_path = File.expand_path(repo.image_path(sha256))
 
     # temp image path
-    temp_image = Tempfile.new([File.basename(file), '.qcow2'])
+    temp_image = Tempfile.new([File.basename(file), '.qcow2'], repo.path)
     temp_image.close
 
     Qcow2.create_from_base(parent_path, temp_image.path)
