@@ -7,9 +7,7 @@ require 'spec_helper'
 require 'qcow2'
 require 'fileutils'
 
-include Cangallo
-
-describe Qcow2 do
+describe Cangallo::Qcow2 do
   before :all do
     @tmpdir = Dir.mktmpdir('qcow2')
   end
@@ -21,7 +19,7 @@ describe Qcow2 do
   context "creating the base image" do
     before :all do
       @path = File.join(@tmpdir, 'base.qcow2')
-      Qcow2.create(@path, nil, 100*1024*1024) # 100 Mb
+      Cangallo::Qcow2.create(@path, nil, 100*1024*1024) # 100 Mb
     end
 
     it "should be able to create it" do
@@ -29,7 +27,7 @@ describe Qcow2 do
     end
 
     it 'should get proper info' do
-      qcow2 = Qcow2.new(@path)
+      qcow2 = Cangallo::Qcow2.new(@path)
 
       info = qcow2.info
       expect(info).not_to eq(nil)
@@ -42,7 +40,7 @@ describe Qcow2 do
 
     if ENV['TRAVIS'] != 'true'
       it 'should be able to compute sha1' do
-        qcow2 = Qcow2.new(@path)
+        qcow2 = Cangallo::Qcow2.new(@path)
 
         sha1 = qcow2.sha1
         expect(sha1).to eq("2c2ceccb5ec5574f791d45b63c940cff20550f9a")
@@ -54,7 +52,7 @@ describe Qcow2 do
     before :all do
       @path = File.join(@tmpdir, 'child.qcow2')
       # 200 Mb
-      Qcow2.create(@path, File.join(@tmpdir, 'base.qcow2'), 200*1024*1024)
+      Cangallo::Qcow2.create(@path, File.join(@tmpdir, 'base.qcow2'), 200*1024*1024)
     end
 
     it "should be able to create it" do
@@ -62,7 +60,7 @@ describe Qcow2 do
     end
 
     it 'should get proper info' do
-      qcow2 = Qcow2.new(@path)
+      qcow2 = Cangallo::Qcow2.new(@path)
 
       info = qcow2.info
       expect(info).not_to eq(nil)
@@ -76,7 +74,7 @@ describe Qcow2 do
 
     if ENV['TRAVIS'] != 'true'
       it 'should be able to compute sha1' do
-        qcow2 = Qcow2.new(@path)
+        qcow2 = Cangallo::Qcow2.new(@path)
 
         sha1 = qcow2.sha1
         expect(sha1).to eq("fd7c5327c68fcf94b62dc9f58fc1cdb3c8c01258")
