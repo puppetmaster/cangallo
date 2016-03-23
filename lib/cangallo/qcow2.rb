@@ -25,6 +25,15 @@ class Cangallo
       copy(destination, :parent => parent, :compress => true)
     end
 
+    def convert(destination, options = {})
+      command = [:convert]
+      command << '-c' if options[:compress]
+      command << "-O #{options[:format]}" if options[:format]
+      command += [@path, destination]
+
+      execute(*command)
+    end
+
     def copy(destination = nil, options = {})
       ops = {
         :parent => nil,
