@@ -179,7 +179,7 @@ class Cangallo
       ancestors << image["sha256"]
 
       while image["parent"]
-        image = image["parent"]
+        image = get(image["parent"])
         ancestors << image["sha256"]
       end
 
