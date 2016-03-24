@@ -53,8 +53,9 @@ class Canga < Thor
     puts format % %w{NAME SIZE DESCRIPTION}
 
     images.each do |image|
-      parent = image["parent"] ? "*" : " "
-      name = "#{parent}#{image["name"]}"
+      parent = image["parent"] ? "^" : " "
+      available = image["available"] ? " " : "*"
+      name = "#{parent}#{available}#{image["name"]}"
 
       size = image["size"].to_f / (1024 * 1024) # Mb
       size = size.round(1)

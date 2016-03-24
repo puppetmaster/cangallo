@@ -32,7 +32,8 @@ class Cangallo
           "name"    => "#{r}:#{name}",
           "size"    => image["actual-size"],
           "parent"  => short_name(image["parent"], r),
-          "description" => image["description"]
+          "description" => image["description"],
+          "available" => File.exist?(repo.image_path(sha256))
         }
       end
     end
