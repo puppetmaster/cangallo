@@ -83,7 +83,7 @@ class Cangallo
 
   def get(string)
     image = find(string)
-    repo, name = parse_name(name)
+    repo, name = parse_name(image)
 
     self.repo(repo).get(name)
   end
