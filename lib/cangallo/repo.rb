@@ -141,7 +141,7 @@ class Cangallo
         write_index
     end
 
-    def find(name)
+    def find(name, search_tags = true)
       length = name.length
       found = @images.select do |sha256, data|
         sha256[0, length] == name
@@ -151,8 +151,10 @@ class Cangallo
         return found.first.first
       end
 
-      found = @tags.select do |tag, sha256|
-        tag == name
+      if search_tags
+        found = @tags.select do |tag, sha256|
+          tag == name
+        end
       end
 
       if found && found.length > 0

@@ -65,5 +65,27 @@ class Cangallo
 
     "#{img_repo}:#{name}"
   end
+
+  def find(string)
+    repo, name = parse_name(string)
+    return "#{repo}:#{self.repo(repo).find(name)}" if repo
+
+    image = self.repo.find(name)
+    return "#{self.repo.name}:#{image}" if image
+
+    @config.repos.each do |r|
+      image = self.repo(r).find(name)
+      return "#{r}:#{image}" if image
+    end
+
+    nil
+  end
+
+  def get(string)
+    image = find(string)
+    repo, name = parse_name(name)
+
+    self.repo(repo).get(name)
+  end
 end
 
