@@ -86,7 +86,10 @@ class Cangallo
     image = find(string)
     repo, name = parse_name(image)
 
-    self.repo(repo).get(name)
+    img = self.repo(repo).get(name)
+
+    img["repo"] = repo if img
+    img
   end
 end
 

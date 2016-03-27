@@ -156,19 +156,18 @@ class Canga < Thor
 
   desc "pull NAME", "downloads an image from a remote repository"
   def pull(name)
-    image = $cangallo.find(name)
-    repo_name, image = $cangallo.parse_name(image)
+    image = $cangallo.get(name)
 
     if !image
       STDERR.puts "Image not found"
       exit(-1)
     end
 
-    repo = $cangallo.repo(repo_name)
-    images = repo.ancestors(image)
+    repo = $cangallo.repo(image["repo"])
+    images = repo.ancestors(image["sha256"])
 
     images.reverse.each do |img|
-      name = $cangallo.short_name(img, repo_name)
+      name = $cangallo.short_name(img, image["repo"])
       if File.exist?(repo.image_path(img))
         STDERR.puts "Image #{name} already downloaded"
       else
@@ -182,15 +181,15 @@ class Canga < Thor
   option :format, :desc => "format for output image", :default => :qcow2, :alliases => :f
   option :compress, :desc => "compress output qcow2 image", :default => false, :alliases => :c
   def export(image, output)
-    repo = $cangallo.repo(options[:repo])
-    sha256 = repo.find(image)
+    image = $cangallo.get(image)
 
-    if !sha256
+    if !image
       STDERR.puts "Image not found"
       exit(-1)
     end
 
-    path = File.expand_path(repo.image_path(sha256))
+    repo = $cangallo.repo(image["repo"])
+    path = File.expand_path(repo.image_path(image["sha256"]))
 
     Cangallo::Qcow2.new(path).convert(output,options)
   end
