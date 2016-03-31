@@ -49,13 +49,20 @@ qemu-img info --output=json repo/2a492f15396a6768bcbca016993f4b4c8b0b5307.qcow2
 # Listing images in the repository
 
 ```
-$ bin/canga list
-HASH                                     SIZE       DISK_SIZE  DESCRIPTION
-2c2ceccb5ec5574f (delete_me)             104857600  200704
-850dd1fccd8f5b1e (ubuntu:16.04)          2361393152 302292992
-258471026d4d5403 (ubuntu:one:16.04)      2361393152 14893056   OpenNebula Compatible Ubuntu 16.04
-2a492f15396a6768 (test_image)            1073741824 200704
+NAME                                  SIZE DESCRIPTION
+  default:zentyal                1221.1 Mb
+^ default:zentyal/one               2.8 Mb Zentyal with context packages
+  default:centos72                372.9 Mb
+^ default:473d40cc50278446         60.6 Mb OpenNebula Compatible CentOS 7
+  default:alpine                   76.6 Mb
+^ default:e7033e957c559fb0          0.4 Mb test image
+  remote:zentyal                 1221.1 Mb
+^ remote:zentyal/one                2.8 Mb Zentyal with context packages
+ *remote:centos72                 372.9 Mb
 ```
+
+* `^`: has a parent
+* `*`: image was still not downloaded
 
 # Creating a derived image
 
@@ -144,6 +151,36 @@ $ ls -l repo/index.yaml.sig
 $ bin/canga verify
 Signature verified. Signed by jfontan 4 minutes ago (2016-03-13 16:52:28 +0100 CET).
 PGP Fingerprint: d21c933397d1dea76ab4035a5255eb6cbbceb6b3.
+```
+
+# Download a repo index
+
+```
+$ bin/canga fetch --repo=remote
+```
+
+# Pull images from a remote repository
+
+```
+$ bin/canga list
+NAME                                  SIZE DESCRIPTION
+ *remote:centos72                 372.9 Mb
+^*remote:473d40cc50278446          60.6 Mb OpenNebula Compatible CentOS 7
+$ bin/canga pull remote:473d40cc50278446
+Downloading remote:centos72
+curl -o '/home/jfontan/.cangallo/remote/5318a77f9faae02f2e575e903045fcd8fa66d791e912fca7fbe96189e413a1cb.qcow2' 'http://localhost:8000/5318a77f9faae02f2e575e903045fcd8fa66d791e912fca7fbe96189e413a1cb.qcow2'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  373M  100  373M    0     0   273M      0  0:00:01  0:00:01 --:--:--  273M
+Downloading remote:473d40cc50278446
+curl -o '/home/jfontan/.cangallo/remote/473d40cc502784464d69b41bd38109e5794b48169ee803b80bcb625b98d5bedf.qcow2' 'http://localhost:8000/473d40cc502784464d69b41bd38109e5794b48169ee803b80bcb625b98d5bedf.qcow2'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 60.7M  100 60.7M    0     0   210M      0 --:--:-- --:--:-- --:--:--  210M
+$ bin/canga list
+NAME                                  SIZE DESCRIPTION
+  remote:centos72                 372.9 Mb
+^ remote:473d40cc50278446          60.6 Mb OpenNebula Compatible CentOS 7
 ```
 
 
