@@ -37,7 +37,8 @@ class Cangallo
     def copy(destination = nil, options = {})
       ops = {
         :parent => nil,
-        :compress => true
+        :compress => true,
+        :only_copy => false
       }.merge(options)
 
       parent = ops[:parent]
@@ -50,7 +51,11 @@ class Cangallo
       command << "-o backing_file=#{parent}" if parent
       command += [@path, new_path]
 
-      execute *command
+      if ops[:only_copy]
+        FileUtils.cp(@path, new_path)
+      else
+        execute *command
+      end
 
       # pp command
       # system(*command)
