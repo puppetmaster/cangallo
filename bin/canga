@@ -193,6 +193,34 @@ class Canga < Thor
 
     Cangallo::Qcow2.new(path).convert(output,options)
   end
+
+  desc "import IMAGE [repository]", "import an image from a remote repository"
+  option :tag, :desc => "tag name of the new image"
+  def import(image_name, repo = nil)
+    image = $cangallo.get(image_name)
+
+    if !image
+      STDERR.puts "Image not found"
+      exit(-1)
+    end
+
+    sha256 = image["sha256"]
+
+    remote_repo = $cangallo.repo(image["repo"])
+    remote_path = remote_repo.image_path(sha256)
+
+    repository = $cangallo.repo(repo)
+    image_path = repository.image_path(sha256)
+
+    FileUtils.ln(remote_path, image_path, force: true)
+
+    image.delete("repo")
+    repository.add(sha256, image)
+
+    repository.add_tag(options[:tag], sha256) if options[:tag]
+
+    repository.write_index
+  end
 end
 
 Canga.start(ARGV)
