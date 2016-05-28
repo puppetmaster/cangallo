@@ -20,16 +20,16 @@ class Canga < Thor
 
   desc "create FILE [SIZE]", "create a new qcow2 image"
   option :parent, :desc => "id of the parent image"
-  def create(file, size=nil)
+  def create(file, size = nil)
     puts [file, size]
     Cangallo::Qcow2.create(file, options[:parent], size)
   end
 
-  desc "add FILE", "add a new file to the repository"
+  desc "add FILE [REPO]", "add a new file to the repository"
   option :parent, :desc => "id of the parent image"
   option :tag, :desc => "tag name of the new image"
-  def add(file)
-    repo = $cangallo.repo(options[:repo])
+  def add(file, repo_name = nil)
+    repo_name = $cangallo.repo(repo_name)
     sha256 = repo.add_image(file)
 
     repo.add_tag(options[:tag], sha256) if options[:tag]
@@ -75,9 +75,9 @@ class Canga < Thor
     repo.del_tag(name)
   end
 
-  desc "list", "list images"
-  def list()
-    repo = $cangallo.repo(options[:repo])
+  desc "list [REPO]", "list images"
+  def list(repo_name = nil)
+    repo = $cangallo.repo(repo_name)
     repo_name = repo.name
 
     images = $cangallo.get_images
@@ -175,22 +175,22 @@ class Canga < Thor
     temp_image.delete
   end
 
-  desc "fetch", "download the index of the repository"
-  def fetch
-    repo = $cangallo.repo(options[:repo])
+  desc "fetch [REPO]", "download the index of the repository"
+  def fetch(repo_name = nil)
+    repo = $cangallo.repo(repo_name)
 
     repo.fetch
   end
 
-  desc "sign", "sign the index file with keybase"
-  def sign
-    repo = $cangallo.repo(options[:repo])
+  desc "sign [REPO]", "sign the index file with keybase"
+  def sign(repo_name = nil)
+    repo = $cangallo.repo(repo_name)
     repo.sign
   end
 
-  desc "verify", "verify index signature with keybase"
-  def verify
-    repo = $cangallo.repo(options[:repo])
+  desc "verify [REPO]", "verify index signature with keybase"
+  def verify(repo_name = nil)
+    repo = $cangallo.repo(repo_name)
     repo.verify
   end
 
