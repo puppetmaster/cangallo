@@ -49,15 +49,30 @@ class Canga < Thor
   end
 
   desc "tag TAGNAME IMAGE", "add a tag name to an existing image"
-  def tag(tag, sha256)
-    repo = $cangallo.repo(options[:repo])
-    repo.add_tag(tag, sha256)
+  def tag(tag, name)
+    image = $cangallo.get(name)
+
+    if !image
+      STDERR.puts %Q{Image "#{name}" not found}
+      exit(-1)
+    end
+
+    repo = $cangallo.repo(image['repo'])
+    repo.add_tag(tag, image['sha256'])
   end
 
   desc "deltag TAGNAME", "deletes a tag"
   def deltag(tag)
-    repo = $cangallo.repo(options[:repo])
-    repo.del_tag(tag)
+    repo, name = $cangallo.parse_name(tag)
+    image = $cangallo.get(tag)
+
+    if !image
+      STDERR.puts %Q{Image "#{name}" not found}
+      exit(-1)
+    end
+
+    repo = $cangallo.repo(repo)
+    repo.del_tag(name)
   end
 
   desc "list", "list images"
@@ -96,34 +111,40 @@ class Canga < Thor
   end
 
   desc "overlay IMAGE FILE", "create a new image based on another one"
-  def overlay(sha256, file)
-    repo = $cangallo.repo(options[:repo])
-
-    image = repo.find(sha256)
+  def overlay(name, file)
+    image = $cangallo.get(name)
 
     if !image
       STDERR.puts "Image not found"
       exit(-1)
     end
 
-    path = File.expand_path(repo.image_path(image))
+    repo = $cangallo.repo(image['repo'])
+    path = File.expand_path(repo.image_path(image['sha256']))
 
     Cangallo::Qcow2.create_from_base(path, file)
   end
 
   desc "build CANGAFILE", "create a new image using a Cangafile"
   def build(file)
-    repo = $cangallo.repo(options[:repo])
     cangafile = Cangallo::Cangafile.new(file)
 
     puts cangafile.libguestfs_commands
 
-    sha256 = repo.find(cangafile.parent)
+    begin
+      image = $cangallo.get(cangafile.parent)
+    rescue => e
+      STDERR.puts e.message
+      exit(-1)
+    end
 
-    if !sha256
+    if !image
       STDERR.puts "Image not found"
       exit(-1)
     end
+
+    sha256 = image['sha256']
+    repo = $cangallo.repo(image['repo'])
 
     parent_path = File.expand_path(repo.image_path(sha256))
 
