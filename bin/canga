@@ -41,6 +41,12 @@ class Canga < Thor
     repo.add_tag(tag, sha256)
   end
 
+  desc "deltag TAGNAME", "deletes a tag"
+  def deltag(tag)
+    repo = $cangallo.repo(options[:repo])
+    repo.del_tag(tag)
+  end
+
   desc "list", "list images"
   def list()
     repo = $cangallo.repo(options[:repo])

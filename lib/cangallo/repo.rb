@@ -136,9 +136,14 @@ class Cangallo
     end
 
     def add_tag(tag, image)
-        img = find(image)
-        @tags[tag] = img
-        write_index
+      img = find(image)
+      @tags[tag] = img
+      write_index
+    end
+
+    def del_tag(tag)
+      @tags.delete(tag)
+      write_index
     end
 
     def find(name, search_tags = true)
