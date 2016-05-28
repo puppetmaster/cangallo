@@ -25,11 +25,11 @@ EOT
 
     def repo(name = nil)
       repo_name = name || @conf['default_repo'] || 'default'
-      raise(%q{Configuration malformed, no 'repos'.}) if !@conf['repos']
+      raise(%q{Configuration malformed, no 'repos'}) if !@conf['repos']
 
       repo_conf = @conf['repos'][repo_name]
-      raise(%Q<No repo with name '#{repo_name}>) if !repo_conf
-      raise(%Q<Repo path no defined for '#{repo_name}>) if !repo_conf['path']
+      raise(%Q<No repo with name '#{repo_name}'>) if !repo_conf
+      raise(%Q<Repo path no defined for '#{repo_name}'>) if !repo_conf['path']
 
       path = File.expand_path(repo_conf["path"])
       repo_conf["path"] = path
