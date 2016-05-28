@@ -35,6 +35,19 @@ class Canga < Thor
     repo.add_tag(options[:tag], sha256) if options[:tag]
   end
 
+  desc "del IMAGE", "delete an image from the repo"
+  def del(name)
+    image = $cangallo.get(name)
+
+    if !image
+      STDERR.puts %Q{Image "#{name}" not found}
+      exit(-1)
+    end
+
+    repo = $cangallo.repo(image["repo"])
+    repo.del_image(image["sha256"])
+  end
+
   desc "tag TAGNAME IMAGE", "add a tag name to an existing image"
   def tag(tag, sha256)
     repo = $cangallo.repo(options[:repo])

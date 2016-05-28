@@ -84,6 +84,8 @@ class Cangallo
 
   def get(string)
     image = find(string)
+    return nil if !image
+
     repo, name = parse_name(image)
 
     img = self.repo(repo).get(name)

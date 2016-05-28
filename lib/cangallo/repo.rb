@@ -135,6 +135,18 @@ class Cangallo
       sha256
     end
 
+    def del_image(image)
+      sha256 = find(image)
+
+      raise %Q{Image "#{image}" does not exist} if !sha256
+
+      path = image_path(sha256)
+      File.delete(path)
+
+      @images.delete(sha256)
+      write_index
+    end
+
     def add_tag(tag, image)
       img = find(image)
       @tags[tag] = img
