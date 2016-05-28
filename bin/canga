@@ -87,7 +87,7 @@ class Canga < Thor
       exit(-1)
     end
 
-    path = File.expand_path(repo.image_path(sha256))
+    path = File.expand_path(repo.image_path(image))
 
     Cangallo::Qcow2.create_from_base(path, file)
   end
