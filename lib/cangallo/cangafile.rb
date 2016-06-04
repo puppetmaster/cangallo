@@ -15,7 +15,7 @@ class Cangallo
     ACTIONS = {
       "copy" => {
         "action" => lambda do |input|
-          add_head "copy-in #{input}"
+          add_head "copy-in #{input.gsub(" ", ":")}"
         end
       },
 
@@ -40,13 +40,13 @@ class Cangallo
           regexp = input["regexp"].gsub("/", "\\/")
           text = input["text"]
           file = input["file"]
-          add_head "run sed -i 's/#{regexp}/#{text}/g' #{file}"
+          add_head "run-command sed -i 's/#{regexp}/#{text}/g' #{file}"
         end
       },
 
       "delete" => {
         "action" => lambda do |input|
-          add_head "run rm -rf #{input}"
+          add_head "run-command rm -rf #{input}"
         end
       },
 
