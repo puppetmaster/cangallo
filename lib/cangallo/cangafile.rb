@@ -13,33 +13,115 @@ class Cangallo
     attr_accessor :data
 
     ACTIONS = {
-      "copy" => lambda do |input|
-        required = %w{source destination}
-        if (required & input.keys) != required
-          raise %s{copy command needs "source" and "destination"}
+      "copy" => {
+        "action" => lambda do |input|
+          add_head "copy-in #{input}"
         end
+      },
 
-        "copy-in #{input["source"}:#{input["destination"]}"
-      end,
+      "run" => {
+        "type" => [Array, String],
+        "action" => lambda do |input|
+          if input.class == String
+            commands = input.split("\n").reject {|l| l.empty? }
+          else
+            commands = input
+          end
 
-      "run" => lambda do |input|
-        if input.class != String
-          raise %s{run command needs a string}
+          commands.each do |cmd|
+            add_head "run-command #{cmd}"
+          end
         end
+      },
 
-        "run-command #{input}"
-      end
+      "change" => {
+        "type" => Hash,
+        "action" => lambda do |input|
+          regexp = input["regexp"].gsub("/", "\\/")
+          text = input["text"]
+          file = input["file"]
+          add_head "run sed -i 's/#{regexp}/#{text}/g' #{file}"
+        end
+      },
+
+      "delete" => {
+        "action" => lambda do |input|
+          add_head "run rm -rf #{input}"
+        end
+      },
+
+      "password" => {
+        "type" => Hash,
+        "action" => lambda do |input|
+          if input["disabled"]
+            password = "disabled"
+          else
+            password = "password:#{input["password"]}"
+          end
+
+          add_parameter "--password '#{input["user"]}:#{password}'"
+        end
+      }
     }
 
     def initialize(file)
       text = File.read(file)
       @data = YAML.load(text)
 
+      @params = []
+      @head = []
+      @tail = []
+
       if !@data["tasks"] || @data["tasks"].class != Array
         raise "No tasks defined or it's not an array"
       end
 
       @tasks = @data["tasks"]
+    end
+
+    def render
+      @tasks.each do |task|
+        raise %Q{Task "#{task.inspect}" malformed} if task.class != Hash
+
+        action_name = task.keys.first
+        action_data = task[action_name]
+
+        if !ACTIONS.keys.include?(action_name)
+          raise %Q{Invalid action "#{action_name}"}
+        end
+
+        action = ACTIONS[action_name]
+
+        if action["type"]
+          type = [action["type"]].flatten
+        else
+          type = [String]
+        end
+
+        # Check action value type
+        task_type = action_data.class
+        if !type.include?(task_type)
+          raise %Q{Action parameters for "#{action_name}" must be "#{type.inspect}"}
+        end
+
+        if action["action"]
+          instance_exec(action_data, &action["action"])
+        end
+      end
+
+      return @head + @tail, @params
+    end
+
+    def add_head(str)
+      @head << str
+    end
+
+    def add_tail(str)
+      @tail.unshift(str)
+    end
+
+    def add_parameter(str)
+      @params << str
     end
 
     def file_commands
