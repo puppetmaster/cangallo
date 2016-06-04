@@ -9,14 +9,15 @@ require 'fileutils'
 class Cangallo
 
   class LibGuestfs
-    def self.virt_customize(image, commands)
+    def self.virt_customize(image, commands, params = "")
       cmd_file = Tempfile.new("canga")
 
       cmd_file.puts(commands)
       cmd_file.close
 
       #rc = system("virt-customize -v -x -a #{image} --commands-from-file #{cmd_file.path}")
-      rc = system("virt-customize -a #{image} --commands-from-file #{cmd_file.path}")
+      rc = system("virt-customize -a #{image} #{params.join(" ")} " <<
+                  "--commands-from-file #{cmd_file.path}")
       cmd_file.unlink
 
       return rc

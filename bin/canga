@@ -129,7 +129,8 @@ class Canga < Thor
   def build(file)
     cangafile = Cangallo::Cangafile.new(file)
 
-    puts cangafile.libguestfs_commands
+    commands, params = cangafile.render
+    puts commands
 
     begin
       image = $cangallo.get(cangafile.parent)
@@ -154,7 +155,7 @@ class Canga < Thor
 
     Cangallo::Qcow2.create_from_base(parent_path, temp_image.path)
 
-    rc = Cangallo::LibGuestfs.virt_customize(temp_image.path, cangafile.libguestfs_commands)
+    rc = Cangallo::LibGuestfs.virt_customize(temp_image.path, commands, params)
     exit(-1) if !rc
 
     rc = Cangallo::LibGuestfs.virt_sparsify(temp_image.path)
