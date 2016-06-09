@@ -29,7 +29,7 @@ class Canga < Thor
   option :parent, :desc => "id of the parent image"
   option :tag, :desc => "tag name of the new image"
   def add(file, repo_name = nil)
-    repo_name = $cangallo.repo(repo_name)
+    repo = $cangallo.repo(repo_name)
     sha256 = repo.add_image(file)
 
     repo.add_tag(options[:tag], sha256) if options[:tag]
