@@ -82,9 +82,11 @@ class Canga < Thor
 
     images = $cangallo.get_images
 
-    format = "%-30.30s %11.11s %-30.30s"
+    format = "%-50.50s %11.11s %8.8s"
 
-    puts format % %w{NAME SIZE DESCRIPTION}
+    print "\e[1;4m"
+    print format % %w{NAME SIZE DAYS_AGO}
+    puts "\e[0m"
 
     images.each do |image|
       parent = image["parent"] ? "^" : " "
@@ -94,7 +96,18 @@ class Canga < Thor
       size = image["size"].to_f / (1024 * 1024) # Mb
       size = size.round(1)
 
-      puts format % [name, "#{size} Mb", image["description"]]
+      if image["creation-time"]
+        days = ( Time.new - image["creation-time"] ) / (60*60*24)
+        days = days.round(1)
+      else
+        days = "N/A"
+      end
+
+      print "\e[1m"
+      print format % [name, "#{size} Mb", days]
+      puts "\e[0m"
+
+      puts "    %-70.70s" % [image["description"]] if image["description"]
     end
   end
 

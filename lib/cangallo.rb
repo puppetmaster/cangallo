@@ -33,7 +33,8 @@ class Cangallo
           "size"    => image["actual-size"],
           "parent"  => short_name(image["parent"], r),
           "description" => image["description"],
-          "available" => File.exist?(repo.image_path(sha256))
+          "available" => File.exist?(repo.image_path(sha256)),
+          "creation-time" => image["creation-time"]
         }
       end
     end
