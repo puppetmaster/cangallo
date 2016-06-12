@@ -5,4 +5,3 @@ gem 'systemu'
 gem 'simplecov'
 gem 'rake'
 gem 'rspec'
-
