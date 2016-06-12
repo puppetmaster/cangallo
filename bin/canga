@@ -126,6 +126,7 @@ class Canga < Thor
   end
 
   desc "build CANGAFILE", "create a new image using a Cangafile"
+  option :tag, :desc => "tag name of the new image"
   def build(file)
     cangafile = Cangallo::Cangafile.new(file)
 
@@ -170,10 +171,14 @@ class Canga < Thor
 
     data["cangafile"] = cangafile.data
 
-    repo.add_image(temp_image.path, data)
+    new_image = repo.add_image(temp_image.path, data)
 
     puts "Deleting temporary image"
     temp_image.delete
+
+    tag = options[:tag] || cangafile.data['tag']
+
+    repo.add_tag(tag, new_image) if tag
   end
 
   desc "fetch [REPO]", "download the index of the repository"
