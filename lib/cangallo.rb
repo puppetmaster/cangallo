@@ -9,6 +9,9 @@ require 'cangallo/libguestfs'
 require 'cangallo/keybase'
 
 class Cangallo
+
+  VERSION = '0.0.1'
+
   def initialize
     @config = Cangallo::Config.new
   end

@@ -16,7 +16,13 @@ require "pp"
 $cangallo = Cangallo.new
 
 class Canga < Thor
+  map ['--version', '-V'] => :__print_version
   class_option :repo, :desc => 'repository to use'
+
+  desc "--version, -V", "show version"
+  def __print_version
+    puts Cangallo::VERSION
+  end
 
   desc "create FILE [SIZE]", "create a new qcow2 image"
   option :parent, :desc => "id of the parent image"
