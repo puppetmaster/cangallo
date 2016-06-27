@@ -34,10 +34,17 @@ class Cangallo
     @config.repo(name)
   end
 
-  def get_images
+  def get_images(repo_name = nil)
     info = []
+    repos = []
 
-    @config.repos.each do |r|
+    if repo_name
+      repos = [repo_name]
+    else
+      repos = @config.repos
+    end
+
+    repos.each do |r|
       repo = self.repo(r)
 
       repo.images.each do |sha256, image|

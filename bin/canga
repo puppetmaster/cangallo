@@ -96,10 +96,7 @@ class Canga < Thor
 
   desc "list [REPO]", "list images"
   def list(repo_name = nil)
-    repo = $cangallo.repo(repo_name)
-    repo_name = repo.name
-
-    images = $cangallo.get_images
+    images = $cangallo.get_images(repo_name)
 
     format = "%-50.50s %11.11s %8.8s"
 
