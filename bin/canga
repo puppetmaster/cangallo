@@ -132,7 +132,7 @@ class Canga < Thor
     image = $cangallo.get(name)
 
     if image
-      pp image
+      puts image.to_yaml
     else
       SDTERR.puts "No image found with name '#{name}'"
       exit(-1)
