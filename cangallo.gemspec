@@ -1,7 +1,10 @@
 
+$LOAD_PATH << './lib'
+require 'cangallo/version'
+
 Gem::Specification.new do |s|
   s.name        = 'cangallo'
-  s.version     = '0.0.1'
+  s.version     = Cangallo::VERSION
   s.date        = '2016-06-28'
   s.summary     = "Cangallo!!"
   s.description = "VM Image manager"

@@ -21,11 +21,9 @@ require 'cangallo/repo'
 require 'cangallo/cangafile'
 require 'cangallo/libguestfs'
 require 'cangallo/keybase'
+require 'cangallo/version'
 
 class Cangallo
-
-  VERSION = '0.0.1'
-
   def initialize
     @config = Cangallo::Config.new
   end
