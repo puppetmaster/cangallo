@@ -1,22 +1,61 @@
 
-**WARNING**: still in early stages, expect crashes, data loss and incompatible changes.
+#CANGALLO
+Cangallo is a command-line tool written in ruby, that uses `qemu-img` and `libguestfs` to manage, create and organize qcow2 images. It's repository holds images and deltas of derived images in a similar way as Docker but in a block level instead of file level.
+It should work nicely on any `Linux` flavor but, we recommend `Ubuntu` or `CentOS`.
 
-Cangallo is a tool that uses `qemu-img` and `libguestfs` to manage, create and organize qcow2 images. It's repository holds images and deltas of derived images in a similar way as Docker but in a block level instead of file level.
+**WARNING**: Beware, still in early stages, expect crashes, data loss and incompatible changes. Working on the OSX port with no ETA: (unmet dependencies like `libguestfs` and `mkisofs`)
 
-## Requirements
+## Requirements before using cangallo
+Before using canga, you will need to have some tools up and running:
 
-* Ruby 2.2.0
+* Ruby >= 2.2.0
 * qemu-img >= 2.4.0
 * libguestfs, tested with 1.28 but should work with older versions
 * keybase, for index sign and verify functionality
 
-## Ruby dependencies installation
+## Ruby dependencies
+After installing ruby you'll need to install a couple of packages by typing:
 
 ```
+$ gem install bundle
 $ bundle install
 ```
 
-## Creating a qcow2 image
+## How to install
+Just type:
+```
+$ git clone https://github.com/jfontan/cangallo
+```
+Then go to the cangallo/bin folder and type
+```
+$ ./canga
+```
+The output should be:
+```
+$ ./canga
+Commands:
+  canga --version, -V              # show version
+  canga add FILE [REPO]            # add a new file to the repository
+  canga build CANGAFILE            # create a new image using a Cangafile
+  canga create FILE [SIZE]         # create a new qcow2 image
+  canga del IMAGE                  # delete an image from the repo
+  canga deltag TAGNAME             # deletes a tag
+  canga export IMAGE OUTPUT        # export an image to a file
+  canga fetch [REPO]               # download the index of the repository
+  canga help [COMMAND]             # Describe available commands or one specific command
+  canga import IMAGE [repository]  # import an image from a remote repository
+  canga list [REPO]                # list images
+  canga overlay IMAGE FILE         # create a new image based on another one
+  canga pull NAME                  # downloads an image from a remote repository
+  canga show IMAGE                 # show information about an image
+  canga sign [REPO]                # sign the index file with keybase
+  canga tag TAGNAME IMAGE          # add a tag name to an existing image
+  canga verify [REPO]              # verify index signature with keybase
+  $ 
+```
+## Usage and examples
+
+### Creating a qcow2 image
 
 ```
 $ bin/canga create test.qcow2 1G
@@ -34,7 +73,7 @@ Format specific information:
     corrupt: false
 ```
 
-# Adding an image to the repository
+### Adding an image to the repository
 
 ```
 $ bin/canga add test.qcow2 --tag test_image
@@ -46,7 +85,7 @@ qemu-img convert -p -O qcow2 -c test.qcow2 repo/2a492f15396a6768bcbca016993f4b4c
 qemu-img info --output=json repo/2a492f15396a6768bcbca016993f4b4c8b0b5307.qcow2
 ```
 
-# Listing images in the repository
+### Listing images in the repository
 
 ```
 NAME                                  SIZE DESCRIPTION
@@ -64,7 +103,7 @@ NAME                                  SIZE DESCRIPTION
 * `^`: has a parent
 * `*`: image was still not downloaded
 
-# Creating a derived image
+### Creating a derived image
 
 To create a derived image a "Cangafile" is used. It's a yaml file like this one:
 
@@ -127,7 +166,7 @@ HASH                                     SIZE       DISK_SIZE  DESCRIPTION
 8a02f25118384ca9                         2361393152 14819328   OpenNebula Compatible Ubuntu 16.04
 ```
 
-# Tag an image
+### Tag an image
 
 ```
 $ bin/canga tag ubuntu:one:16.04 8a02f25118384ca9142081af76e24de7d1dd6816
@@ -137,7 +176,7 @@ HASH                                     SIZE       DISK_SIZE  DESCRIPTION
 8a02f25118384ca9 (ubuntu:one:16.04)      2361393152 14819328   OpenNebula Compatible Ubuntu 16.04
 ```
 
-# Sign index
+### Sign index
 
 ```
 $ bin/canga sign
@@ -145,7 +184,7 @@ $ ls -l repo/index.yaml.sig
 -rw-r--r-- 1 jfontan jfontan 801 Mar 13 16:52 repo/index.yaml.sig
 ```
 
-# Verify index signature
+### Verify index signature
 
 ```
 $ bin/canga verify
@@ -153,13 +192,13 @@ Signature verified. Signed by jfontan 4 minutes ago (2016-03-13 16:52:28 +0100 C
 PGP Fingerprint: d21c933397d1dea76ab4035a5255eb6cbbceb6b3.
 ```
 
-# Download a repo index
+### Download a repo index
 
 ```
 $ bin/canga fetch --repo=remote
 ```
 
-# Pull images from a remote repository
+### Pull images from a remote repository
 
 ```
 $ bin/canga list
