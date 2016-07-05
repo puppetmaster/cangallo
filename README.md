@@ -24,7 +24,7 @@ $ bundle install
 ## How to install
 Just type:
 ```
-$git clone https://github.com/jfontan/cangallo
+$ git clone https://github.com/jfontan/cangallo
 ```
 Then go to the cangallo/bin folder and type
 ```
