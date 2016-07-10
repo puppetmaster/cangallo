@@ -134,7 +134,7 @@ class Canga < Thor
     if image
       puts image.to_yaml
     else
-      SDTERR.puts "No image found with name '#{name}'"
+      STDERR.puts "No image found with name '#{name}'"
       exit(-1)
     end
   end
