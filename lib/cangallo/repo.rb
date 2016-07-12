@@ -105,6 +105,8 @@ class Cangallo
       parent = nil
       parent_path = nil
 
+      only_copy = data.delete("only_copy")
+
       if data["parent"]
         parent_sha256 = data["parent"]
         parent = self.images[parent_sha256]
@@ -125,7 +127,7 @@ class Cangallo
 
       puts "Copying file to repository"
       image_path = self.image_path(sha256)
-      qcow2.copy(image_path, :parent => parent_path)
+      qcow2.copy(image_path, parent: parent_path, only_copy: only_copy)
 
       qcow2 = Cangallo::Qcow2.new(image_path)
       info = qcow2.info

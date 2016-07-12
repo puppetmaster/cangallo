@@ -47,9 +47,11 @@ class Canga < Thor
   desc "add FILE [REPO]", "add a new file to the repository"
   option :parent, :desc => "id of the parent image"
   option :tag, :desc => "tag name of the new image"
+  option :copy, :desc => "do not process the image, make an exact copy",
+          :type => :boolean
   def add(file, repo_name = nil)
     repo = $cangallo.repo(repo_name)
-    sha256 = repo.add_image(file)
+    sha256 = repo.add_image(file, "only_copy" => options[:copy])
 
     repo.add_tag(options[:tag], sha256) if options[:tag]
   end
@@ -134,7 +136,7 @@ class Canga < Thor
     if image
       puts image.to_yaml
     else
-      SDTERR.puts "No image found with name '#{name}'"
+      STDERR.puts "No image found with name '#{name}'"
       exit(-1)
     end
   end
