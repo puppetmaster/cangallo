@@ -1,12 +1,13 @@
 
-#CANGALLO
-Cangallo is a command-line tool written in ruby, that uses `qemu-img` and `libguestfs` to manage, create and organize qcow2 images. It's repository holds images and deltas of derived images in a similar way as Docker but in a block level instead of file level.
+CANGALLO
+
+Cangallo (pronounced canga-io) is a command-line tool written in ruby, that uses `qemu-img` and `libguestfs` to manage, create and organize qcow2 images. It's repository holds images and deltas of derived images in a similar way as Docker but in a block level instead of file level.
 It should work nicely on any `Linux` flavor but, we recommend `Ubuntu` or `CentOS`.
 
 **WARNING**: Beware, still in early stages, expect crashes, data loss and incompatible changes. Working on the OSX port with no ETA: (unmet dependencies like `libguestfs` and `mkisofs`)
 
 ## Requirements before using cangallo
-Before using canga, you will need to have some tools up and running:
+Before using cangallo, you will need to have some tools up and running:
 
 * Ruby >= 2.2.0
 * qemu-img >= 2.4.0
@@ -39,23 +40,66 @@ Commands:
   canga build CANGAFILE            # create a new image using a Cangafile
   canga create FILE [SIZE]         # create a new qcow2 image
   canga del IMAGE                  # delete an image from the repo
-  canga deltag TAGNAME             # deletes a tag
+  canga deltag TAGNAME             # delete a tag
   canga export IMAGE OUTPUT        # export an image to a file
   canga fetch [REPO]               # download the index of the repository
   canga help [COMMAND]             # Describe available commands or one specific command
   canga import IMAGE [repository]  # import an image from a remote repository
   canga list [REPO]                # list images
   canga overlay IMAGE FILE         # create a new image based on another one
-  canga pull NAME                  # downloads an image from a remote repository
+  canga pull NAME                  # download an image from a remote repository
   canga show IMAGE                 # show information about an image
   canga sign [REPO]                # sign the index file with keybase
   canga tag TAGNAME IMAGE          # add a tag name to an existing image
   canga verify [REPO]              # verify index signature with keybase
   $ 
 ```
-## Usage and examples
+## Usage and parameters
+
+Syntax: ```canga [PARAM] [COMMAND]``` 
+
+### version 
+--version or -V prints out the version number
+### add
+The add parameter, adds a file to the canga repository
+If using the ```--copy``` parameter, the original image is copied instead
+of converting it. With this command the sha256 hash of
+the file does not change. This is useful to import images
+prepared by Linux distros. Check the "Adding an image to a repository" example below
+### build
+Create a new image using a Cangafile config. Check the "Create a derived image" example below. 
+### create
+Create a new qcow2 image. Check the "Creating a qcow2 image" example below.
+### del
+Delete an image from the repo
+### deltag
+Delete a tag. Check the "Tag an image" example below
+### export
+Export an image to a file
+### fetch
+Download the index of the repository. Check the "Download a repo" example below
+### help
+Describe available commands or one specific command
+### import
+Import an image from a remote repository
+### list
+List and visualize images (tagged or not). Check the "Listing images in a repository" example below
+### overlay
+Create a new image based on another one
+### pull
+Download an image from another repo. Check the "Pull images from a remote repository" example below
+### show
+Show info about an image
+### sign
+Sign the index file with keybase. Check the "Sign index" example below
+### tag
+Add a tag name to an existing image
+### verify
+Ferify index signature with keybase. Check the "Verify index signature" example below
+## Examples and scenarios
 
 ### Creating a qcow2 image
+creating test.qcow2 1GB image
 
 ```
 $ bin/canga create test.qcow2 1G
@@ -73,7 +117,8 @@ Format specific information:
     corrupt: false
 ```
 
-### Adding an image to the repository
+### Adding an image to a repository
+Adding test.qcow2 to the repo
 
 ```
 $ bin/canga add test.qcow2 --tag test_image
@@ -85,9 +130,10 @@ qemu-img convert -p -O qcow2 -c test.qcow2 repo/2a492f15396a6768bcbca016993f4b4c
 qemu-img info --output=json repo/2a492f15396a6768bcbca016993f4b4c8b0b5307.qcow2
 ```
 
-### Listing images in the repository
+### Listing images in a repository
 
 ```
+$ bin/canga list
 NAME                                  SIZE DESCRIPTION
   default:zentyal                1221.1 Mb
 ^ default:zentyal/one               2.8 Mb Zentyal with context packages
@@ -221,8 +267,3 @@ NAME                                  SIZE DESCRIPTION
   remote:centos72                 372.9 Mb
 ^ remote:473d40cc50278446          60.6 Mb OpenNebula Compatible CentOS 7
 ```
-
-
-
-
-
