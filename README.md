@@ -312,3 +312,16 @@ $ canga list remote
 NAME                                                      SIZE DAYS_AGO
   remote:ubuntu1404                                   270.4 Mb     88.1
 ```
+
+## License
+
+Docker is licensed under the Apache License, Version 2.0.
+
+Author:
+  * Javier Fontan Muiños
+
+Contributors:
+
+  * Dan Kelleher
+  * Diego Nieto Caride
+
