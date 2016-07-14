@@ -35,30 +35,30 @@ The output should be:
 ```
 $ ./canga
 Commands:
-  canga --version, -V              # show version
-  canga add FILE [REPO]            # add a new file to the repository
-  canga build CANGAFILE            # create a new image using a Cangafile
-  canga create FILE [SIZE]         # create a new qcow2 image
-  canga del IMAGE                  # delete an image from the repo
-  canga deltag TAGNAME             # delete a tag
-  canga export IMAGE OUTPUT        # export an image to a file
-  canga fetch [REPO]               # download the index of the repository
-  canga help [COMMAND]             # Describe available commands or one specific command
-  canga import IMAGE [repository]  # import an image from a remote repository
-  canga list [REPO]                # list images
-  canga overlay IMAGE FILE         # create a new image based on another one
-  canga pull NAME                  # download an image from a remote repository
-  canga show IMAGE                 # show information about an image
-  canga sign [REPO]                # sign the index file with keybase
-  canga tag TAGNAME IMAGE          # add a tag name to an existing image
-  canga verify [REPO]              # verify index signature with keybase
-  $ 
+  canga --version, -V        # show version
+  canga add FILE [REPO]      # add a new file to the repository
+  canga build CANGAFILE      # create a new image using a Cangafile
+  canga create FILE [SIZE]   # create a new qcow2 image
+  canga del IMAGE            # delete an image from the repository
+  canga deltag TAGNAME       # delete a tag
+  canga export IMAGE OUTPUT  # export an image to a file
+  canga fetch [REPO]         # download the index of the repository
+  canga help [COMMAND]       # Describe available commands or one specific command
+  canga import IMAGE [REPO]  # import an image from a remote repository
+  canga list [REPO]          # list images
+  canga overlay IMAGE FILE   # create a new image based on another one
+  canga pull NAME            # download an image from a remote repository
+  canga show IMAGE           # show information about an image
+  canga sign [REPO]          # sign the index file with keybase
+  canga tag TAGNAME IMAGE    # add a tag name to an existing image
+  canga verify [REPO]        # verify index signature with keybase
 ```
+
 ## Usage and parameters
 
-Syntax: ```canga [PARAM] [COMMAND]``` 
+Syntax: ```canga [PARAM] [COMMAND]```
 
-### version 
+### version
 --version or -V prints out the version number
 ### add
 The add parameter, adds a file to the canga repository
@@ -67,7 +67,7 @@ of converting it. With this command the sha256 hash of
 the file does not change. This is useful to import images
 prepared by Linux distros. Check the "Adding an image to a repository" example below
 ### build
-Create a new image using a Cangafile config. Check the "Create a derived image" example below. 
+Create a new image using a Cangafile config. Check the "Create a derived image" example below.
 ### create
 Create a new qcow2 image. Check the "Creating a qcow2 image" example below.
 ### del
