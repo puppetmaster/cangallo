@@ -264,8 +264,6 @@ $ canga sign default
 [enter passphrase]
 
 $ ls -l ~/.cangallo/default/index.yaml.sig
-
-$ ls -l ~/.cangallo/default/index.yaml.sig
 -rw-r--r-- 1 jfontan jfontan 801 Jul 14 22:13 /home/jfontan/.cangallo/default/index.yaml.sig
 ```
 
