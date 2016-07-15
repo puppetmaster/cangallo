@@ -1,7 +1,7 @@
 
 CANGALLO
 
-Cangallo (pronounced canga-io) is a command-line tool written in ruby, that uses `qemu-img` and `libguestfs` to manage, create and organize qcow2 images. It's repository holds images and deltas of derived images in a similar way as Docker but in a block level instead of file level.
+Cangallo (pronounced canga-io) is a command-line tool written in ruby, that uses `qemu-img` and `libguestfs` to manage, create and organize qcow2 images. Its repository holds images and deltas of derived images in a similar way as Docker but in a block level instead of file level.
 It should work nicely on any `Linux` flavor but, we recommend `Ubuntu` or `CentOS`.
 
 **WARNING**: Beware, still in early stages, expect crashes, data loss and incompatible changes. Working on the OSX port with no ETA: (unmet dependencies like `libguestfs` and `mkisofs`)
@@ -313,7 +313,7 @@ NAME                                                      SIZE DAYS_AGO
 
 ## License
 
-Docker is licensed under the Apache License, Version 2.0.
+Cangallo is licensed under the Apache License, Version 2.0.
 
 Author:
   * Javier Fontan Muiños
