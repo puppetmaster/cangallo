@@ -19,20 +19,54 @@ require 'json'
 require 'systemu'
 require 'tempfile'
 require 'fileutils'
+require 'shellwords'
+require 'rubygems'
 
 class Cangallo
 
   class LibGuestfs
     def self.virt_customize(image, commands, params = "")
-      cmd_file = Tempfile.new("canga")
+      version = self.version
 
-      cmd_file.puts(commands)
-      cmd_file.close
+      if !version
+        raise "Could not get virt-customize version"
+      end
 
-      #rc = system("virt-customize -v -x -a #{image} --commands-from-file #{cmd_file.path}")
-      rc = system("virt-customize -a #{image} #{params.join(" ")} " <<
-                  "--commands-from-file #{cmd_file.path}")
-      cmd_file.unlink
+      target_version = Gem::Version.new('1.30')
+      current_version = Gem::Version.new(version)
+      good_version = false
+
+      customize_command = nil
+
+      good_version = true if current_version >= target_version
+
+      if good_version
+        cmd_file = Tempfile.new("canga")
+
+        cmd_file.puts(commands)
+        cmd_file.close
+
+        customize_command = "virt-customize -a #{image} #{params.join(" ")} " <<
+                            "--commands-from-file #{cmd_file.path}"
+      else
+        cmd_params = commands.map do |line|
+          m = line.match(/^([^\s]+)\s+(.*)$/)
+          if m
+            "--" + m[1] + " " + Shellwords.escape(m[2].strip)
+          else
+            nil
+          end
+        end
+
+        cmd_params.compact!
+
+        customize_command = "virt-customize -a #{image} #{params.join(" ")} " <<
+                            "#{cmd_params.join(" ")}"
+      end
+
+      rc = system(customize_command)
+
+      cmd_file.unlink if good_version
 
       return rc
     end
@@ -41,6 +75,18 @@ class Cangallo
       rc = system("virt-sparsify --in-place #{image}")
 
       return rc
+    end
+
+    def self.version
+      str = `virt-customize --version`
+
+      m = str.match(/^virt-customize (.*)$/)
+
+      if m
+        m[1]
+      else
+        nil
+      end
     end
   end
 end
