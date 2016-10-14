@@ -1,5 +1,5 @@
 
-CANGALLO
+CANGALLO (https://canga.io)
 
 Cangallo (pronounced canga-io) is a command-line tool written in ruby, that uses `qemu-img` and `libguestfs` to manage, create and organize qcow2 images. Its repository holds images and deltas of derived images in a similar way as Docker but in a block level instead of file level.
 It should work nicely on any `Linux` flavor but, we recommend `Ubuntu` or `CentOS`.
@@ -9,9 +9,9 @@ It should work nicely on any `Linux` flavor but, we recommend `Ubuntu` or `CentO
 ## Requirements before using cangallo
 Before using cangallo, you will need to have some tools up and running:
 
-* Ruby >= 2.2.0
+* Ruby >= 1.9.3
 * qemu-img >= 2.4.0
-* libguestfs, tested with 1.28 but should work with older versions
+* libguestfs >= 1.28 (copy command needs at least 1.30)
 * keybase, for index sign and verify functionality
 
 ## Ruby dependencies
@@ -22,7 +22,12 @@ $ gem install bundle
 $ bundle install
 ```
 
+## Package dependencies
+
+You can find instructions for different Linux distros at [Installation](/install).
+
 ## How to install
+
 Just type:
 ```
 $ gem install cangallo
