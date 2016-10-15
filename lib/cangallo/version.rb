@@ -16,5 +16,5 @@
 # limitations under the License.
 
 class Cangallo
-  VERSION = '0.0.2'
+  VERSION = '0.0.3'
 end
