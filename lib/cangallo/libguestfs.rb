@@ -25,6 +25,8 @@ require 'rubygems'
 class Cangallo
 
   class LibGuestfs
+    CUSTOMIZE_CMD = /^([^\s]+)\s+(.*)$/
+
     def self.virt_customize(image, commands, params = "")
       version = self.version
 
@@ -50,14 +52,28 @@ class Cangallo
                             "--commands-from-file #{cmd_file.path}"
       else
         cmd_params = commands.map do |line|
-          m = line.match(/^([^\s]+)\s+(.*)$/)
+          m = line.match(CUSTOMIZE_CMD)
           if m
-            "--" + m[1] + " " + Shellwords.escape(m[2].strip)
+            command = m[1]
+            parms = m[2].strip
+
+            if command == 'copy-in'
+              command = 'upload'
+              parms, new_command = copy_in(parms)
+
+              [
+                "--" + command + " " + Shellwords.escape(parms),
+                "--run-command " + Shellwords.escape(new_command)
+              ]
+            else
+              "--" + command + " " + Shellwords.escape(parms)
+            end
           else
             nil
           end
         end
 
+        cmd_params.flatten!
         cmd_params.compact!
 
         customize_command = "virt-customize -a #{image} #{params.join(" ")} " <<
@@ -87,6 +103,37 @@ class Cangallo
       else
         nil
       end
+    end
+
+    def self.copy_in(str)
+      local, remote = str.split(':')
+
+      raise "Source '#{local}' does not exist" if !File.exist?(local)
+
+      upload_local = local
+      upload_remote = remote
+      run_command = nil
+
+      if File.directory?(local)
+        upload_local_tmp = Tempfile.new("canga")
+        upload_local_tmp.close
+
+        upload_local = upload_local_tmp.path
+        upload_remote = "/tmp/#{File.basename(upload_local)}"
+
+
+        local_parent_dir = File.dirname(local)
+        local_name = File.basename(local)
+        rc = system("tar czf #{upload_local} -C #{local_parent_dir} #{local_name}")
+
+        raise "Error creating tar archive for '#{local_name}'" if !rc
+
+        run_command = "tar xf #{upload_remote} -C #{remote}"
+      end
+
+      upload_param = "#{upload_local}:#{upload_remote}"
+
+      return upload_param, run_command
     end
   end
 end
